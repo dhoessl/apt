@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: "dhoessl"
+  description: "updated and install apt and dpkg packages"
+  company: ""
+
+  license: "MIT"
+
+  min_ansible_version: "2.20.4"
+
+  galaxy_tags:
+    - "apt"
+    - "dpkg"
+
+dependencies: []
+...

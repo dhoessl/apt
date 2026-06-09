@@ -1,0 +1,53 @@
+---
+- name: "Update existing packages"
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    upgrade: "dist"
+    autoclean: true
+  become: true
+  tags:
+    - "apt:upgrade"
+
+- name: "Install gpg signing keys"
+  ansible.builtin.apt_key:
+    url: "{{ item }}"
+    state: "present"
+  become: true
+  loop: "{{ apt_signing_keys | default([]) }}"
+  tags:
+    - "apt:install"
+    - "apt:signing_keys"
+
+- name: "Create source.list.d files"
+  ansible.builtin.template:
+    src: "templates/source.list.j2"
+    dest: "/etc/apt/sources.list.d/{{ item.name }}.sources"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0644') }}"
+  become: true
+  loop: "{{ apt_sources_list | default([]) }}"
+  tags:
+    - "apt:install"
+    - "apt:sources"
+
+- name: "Install packages (apt)"
+  ansible.builtin.apt:
+    name: "{{ apt_apt_packages | default([]) }}"
+    state: "present"
+    update_cache: true
+    force_apt_get: true
+  become: true
+  tags:
+    - "apt:install"
+
+- name: "Install packages(dpkg)"
+  ansible.builtin.apt:
+    deb: "{{ item }}"
+  become: true
+  loop: "{{ apt_deb_packages | default([]) }}"
+  tags:
+    - "apt:install"
+    - "apt:dpkg"
+...
