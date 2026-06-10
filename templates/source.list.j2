@@ -1,9 +1,0 @@
-{% for source in item.source %}
-Types: {{ source.types | default('deb') }}
-URIs: {{ source.uris }}
-Suites: {{ source.suites | default(ansible_facts['distribution_release']) }}
-Components: {{ source.components | join(' ') }}
-{% if singed_by in source %}
-Signed-by: {{ source.singed_by }}
-{% endif %}
-{% endfor %}

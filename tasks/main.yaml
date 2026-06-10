@@ -9,28 +9,16 @@
   tags:
     - "apt:upgrade"
 
-- name: "Install gpg signing keys"
-  ansible.builtin.apt_key:
-    url: "{{ item }}"
-    state: "present"
-  become: true
-  loop: "{{ apt_signing_keys | default([]) }}"
-  tags:
-    - "apt:install"
-    - "apt:signing_keys"
-
-- name: "Create source.list.d files"
-  ansible.builtin.template:
-    src: "templates/source.list.j2"
-    dest: "/etc/apt/sources.list.d/{{ item.name }}.sources"
-    owner: "{{ item.owner | default('root') }}"
-    group: "{{ item.group | default('root') }}"
-    mode: "{{ item.mode | default('0644') }}"
-  become: true
-  loop: "{{ apt_sources_list | default([]) }}"
-  tags:
-    - "apt:install"
-    - "apt:sources"
+- name: "Add repository"
+  ansible.builtin.deb822_repository:
+    name: "{{ item.name }}"
+    types: "deb"
+    uris: "{{ item.uris }}"
+    suites: "{{ item.suites | default(ansible_facts['distribution_release']) }}"
+    components: "{{ item.components }}"
+    signed_by: "{{ item.signed_by | default(omit) }}"
+    architectures: "{{ item.architecture | default(omit) }}"
+  loop: "{{ apt_repositories }}"
 
 - name: "Install packages (apt)"
   ansible.builtin.apt:
