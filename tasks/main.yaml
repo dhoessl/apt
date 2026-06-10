@@ -19,6 +19,9 @@
     signed_by: "{{ item.signed_by | default(omit) }}"
     architectures: "{{ item.architecture | default(omit) }}"
   loop: "{{ apt_repositories }}"
+  become: true
+  tags:
+    - "apt:install"
 
 - name: "Install packages (apt)"
   ansible.builtin.apt:
