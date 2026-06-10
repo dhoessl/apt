@@ -12,7 +12,7 @@
 - name: "Add repository"
   ansible.builtin.deb822_repository:
     name: "{{ item.name }}"
-    types: "deb"
+    types: "{{ item.types | default('deb') }}"
     uris: "{{ item.uris }}"
     suites: "{{ item.suites | default(ansible_facts['distribution_release']) }}"
     components: "{{ item.components }}"
